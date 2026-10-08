@@ -864,12 +864,12 @@
 .merge-mass.recent {
   box-shadow:
     0 0 24px
-    rgba(0, 30, 255, 0.22);
+    rgba(var(--pressure-rgb), 0.22);
 }
 
 .merge-mass.birth {
   background:
-    rgba(0, 30, 255, 0.16);
+    rgba(var(--pressure-rgb), 0.16);
 }
 
 .compression-cell {
@@ -1497,8 +1497,8 @@
 
       <select id="colorSelect">
         <option value="blue">Blue</option>
-        <option value="white">White</option>
-        <option value="black">Black</option>
+        <option value="white" selected>White</option>
+        <option value="black">Black</option>    
       </select>
     </div>
 
