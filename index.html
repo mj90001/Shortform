@@ -1,0 +1,4823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Formative Test</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #111111;
+      color: white;
+      font-family: Inter, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .workspace {
+      display: flex;
+      gap: 42px;
+      align-items: center;
+    }
+
+    /* iPhone 16-ish artboard */
+    .phone {
+      position: relative;
+      width: 393px;
+      height: 852px;
+      background: #000;
+      overflow: hidden;
+      border-radius: 0;
+      box-shadow: 0 28px 80px rgba(0,0,0,0.5);
+    }
+
+    /* Fake short-form video background */
+    .video-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(2,8,18,0.2) 0%, rgba(2,8,18,0.15) 34%, rgba(0,0,0,0.88) 100%),
+        radial-gradient(circle at 45% 28%, rgba(142,208,255,0.36) 0%, rgba(142,208,255,0.08) 24%, transparent 43%),
+        linear-gradient(180deg, #1b2c42 0%, #667f9a 31%, #ffb08a 48%, #1e2330 66%, #070814 100%);
+      z-index: 0;
+    }
+
+    /* simple city silhouette */
+    .city {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 105px;
+      height: 270px;
+      z-index: 1;
+      opacity: 0.9;
+      background:
+        linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.1)),
+        repeating-linear-gradient(90deg, transparent 0 14px, rgba(0,0,0,0.52) 14px 30px);
+      clip-path: polygon(
+        0% 62%, 6% 55%, 10% 68%, 16% 44%, 21% 71%, 27% 39%,
+        32% 75%, 37% 48%, 42% 40%, 46% 16%, 50% 44%, 55% 58%,
+        61% 35%, 66% 71%, 73% 45%, 79% 66%, 85% 40%, 92% 73%, 100% 55%, 
+        100% 100%, 0% 100%
+      );
+    }
+
+    .status-bar {
+      position: absolute;
+      top: 13px;
+      left: 0;
+      right: 0;
+      height: 28px;
+      padding: 0 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 40;
+    }
+
+    .status-icons {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .signal {
+      width: 17px;
+      height: 10px;
+      border: 1.5px solid #fff;
+      border-radius: 2px;
+      opacity: 0.9;
+    }
+
+    .wifi {
+      position: relative;
+
+      width: 18px;
+      height: 14px;
+      border: 0;
+      opacity: 0.95;
+      background:
+      radial-gradient(
+        circle at 50% 92%,
+        #fff 0 1.7px,
+        transparent 1.8px
+      );
+    }
+
+    .wifi::before,
+    .wifi::after {
+      content: "";
+
+      position: absolute;
+
+      left: 50%;
+
+      border:
+        2px solid transparent;
+
+      border-top-color:
+        #fff;
+
+      border-radius:
+        50%;
+
+      transform:
+        translateX(-50%);
+    }
+
+    .wifi::before {
+      top: 1px;
+
+      width: 18px;
+      height: 12px;
+    }
+
+    .wifi::after {
+      top: 6px;
+
+      width: 10px;
+      height: 7px;
+    }
+
+    .battery {
+      position: relative;
+
+      width: 22px;
+      height: 11px;
+
+      border: 1.7px solid
+        rgba(255, 255, 255, 0.95);
+
+      border-radius: 3.5px;
+    }
+
+
+    /* battery terminal */
+    .battery::after {
+      content: "";
+
+      position: absolute;
+
+      right: -3.5px;
+      top: 3px;
+
+      width: 2px;
+      height: 5px;
+
+      background:
+        rgba(255, 255, 255, 0.65);
+
+      border-radius:
+        0 1.5px 1.5px 0;
+    }
+
+
+    /* battery level */
+    .battery::before {
+      content: "";
+
+      position: absolute;
+
+      left: 2px;
+      top: 2px;
+
+      width: 15px;
+      height: 5px;
+
+      background:
+        rgba(255, 255, 255, 0.95);
+
+      border-radius: 1.5px;
+    }
+
+    .top-nav {
+      position: absolute;
+      top: 62px;
+      left: 0;
+      right: 0;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      z-index: 40;
+    }
+
+    .plus {
+      font-size: 31px;
+      font-weight: 200;
+      margin-right: 31px;
+      line-height: 1;
+    }
+
+    .tabs {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .tabs span:nth-child(2) {
+      opacity: 0.92;
+    }
+
+    .top-dots {
+      display: flex;
+      margin-left: 4px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      background: #fff;
+      border-radius: 50%;
+      margin-left: -3px;
+      opacity: 0.96;
+    }
+
+    .right-actions {
+      position: absolute;
+      right: 15px;
+      bottom: 105px;
+      width: 38px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 17px;
+      z-index: 40;
+    }
+
+    .action {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .comment,
+    .share,
+    .more {
+      width: 28px;
+      height: 28px;
+
+      opacity: 0.95;
+    }
+
+    .heart {
+    width: 32px;
+    height: 30px;
+
+    border: 0;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transform: none;
+  }
+
+  .heart::before {
+    content: "♡";
+
+    font-size: 36px;
+    line-height: 1;
+
+    color: #fff;
+
+    font-family:
+      Arial,
+      sans-serif;
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+      translate(-50%, -52%);
+  }
+
+  .heart::after {
+    left: 0;
+
+    border-right: 0;
+
+    border-bottom: 0;
+
+    border-radius:
+      10px 10px 0 0;
+
+    transform:
+      rotate(-45deg);
+
+    transform-origin:
+      100% 100%;
+  }
+
+    .comment {
+    border:
+      2px solid #fff;
+
+    border-radius:
+      50%;
+    }
+
+    .share {
+      border-radius: 4px;
+      transform: rotate(45deg) scale(0.72);
+      border-left: 0;
+      border-bottom: 0;
+      border: 2px solid #fff;
+    }
+
+    .more {
+    border: 0;
+
+    position: relative;
+
+    width: 28px;
+    height: 28px;
+    }
+
+    .more::before {
+    content: "···";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+      translate(-50%, -52%);
+
+    font-size: 26px;
+
+    letter-spacing: 3px;
+
+    white-space: nowrap;
+
+    line-height: 1;
+  }
+
+    .bottom-info {
+      position: absolute;
+      left: 18px;
+      right: 74px;
+      bottom: 86px;
+      z-index: 40;
+      color: white;
+      font-size: 12px;
+    }
+
+    .user-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 8px;
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #bfbfbf;
+    }
+
+    .username {
+      font-weight: 700;
+    }
+
+    .verified {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .follow {
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .caption {
+      line-height: 1.35;
+      margin-bottom: 7px;
+    }
+
+    .followed {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      opacity: 0.92;
+      font-size: 11px;
+    }
+
+    .small-avatars {
+      display: flex;
+    }
+
+    .small-avatars span {
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      border-radius: 50%;
+      margin-left: -4px;
+      border: 1px solid rgba(0,0,0,0.2);
+    }
+
+    .small-avatars span:first-child {
+      margin-left: 0;
+    }
+
+    .bottom-nav {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 70px;
+      background: rgba(0,0,0,0.92);
+      z-index: 45;
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      padding: 13px 26px 0;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-icon {
+      width: 22px;
+      height: 22px;
+      border: 2px solid #fff;
+      border-radius: 5px;
+      opacity: 0.95;
+    }
+
+    .home {
+      border-radius: 4px 4px 8px 8px;
+      transform: rotate(45deg) scale(0.72);
+    }
+
+    .search {
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .search::after {
+      content: "";
+      position: absolute;
+      width: 8px;
+      height: 2px;
+      background: #fff;
+      right: -6px;
+      bottom: 0;
+      transform: rotate(45deg);
+      border-radius: 2px;
+    }
+
+    .plus-nav {
+      position: relative;
+      border-radius: 5px;
+    }
+
+    .plus-nav::before,
+    .plus-nav::after {
+      content: "";
+      position: absolute;
+      background: #fff;
+      border-radius: 2px;
+    }
+
+    .plus-nav::before {
+      width: 12px;
+      height: 2px;
+      left: 3px;
+      top: 8px;
+    }
+
+    .plus-nav::after {
+      height: 12px;
+      width: 2px;
+      left: 8px;
+      top: 3px;
+    }
+
+    .reels-nav {
+      border-radius: 5px;
+    }
+
+    .profile {
+      border-radius: 50%;
+    }
+
+    .home-indicator {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 135px;
+      height: 5px;
+      border-radius: 999px;
+      background: #fff;
+      z-index: 50;
+    }
+
+    .pressure-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+
+      --pressure-rgb: 0, 30, 255;
+    }
+
+
+    .cell {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+
+    border-radius: 2px;
+
+    background:
+      rgba(
+        var(--pressure-rgb),
+        0.8
+      );
+
+    box-shadow:
+      0 0 8px
+      rgba(
+        var(--pressure-rgb),
+        0.22
+      );
+
+    border:
+      1.5px solid transparent;
+
+    opacity: 0;
+
+    transform:
+      translateY(-6px)
+      scale(0.6);
+
+    transition:
+      opacity 0.45s ease,
+      transform 0.45s ease,
+      left 0.28s ease,
+      top 0.28s ease,
+      background 0.28s ease,
+      border-color 0.28s ease;
+
+    }
+
+    .packing-block {
+    position: absolute;
+
+    opacity: 0;
+
+    transform:
+      translateY(-8px)
+      scale(0.96);
+
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s ease;
+
+    pointer-events: none;
+  }
+
+  .layer-segment {
+  position: absolute;
+
+  height: 12px;
+
+  opacity: 0;
+
+  transform:
+    translateY(-4px);
+
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s ease;
+
+  pointer-events: none;
+}
+
+.layer-segment.in {
+  opacity:
+    var(--layer-opacity, 0.72);
+
+  transform:
+    translateY(0);
+}
+
+.layer-cell {
+  position: absolute;
+
+  top: 0;
+
+  width: 12px;
+  height: 12px;
+
+  border-radius: 2px;
+
+  background:
+  rgba(
+    var(--pressure-rgb),
+    0.82
+  );
+
+  box-shadow:
+    0 0 8px
+    rgba(
+      var(--pressure-rgb),
+      0.18
+    );
+}
+
+
+/* recent */
+
+.layer-segment.recent
+.layer-cell {
+  box-shadow:
+    0 0 12px
+    rgba(
+      var(--pressure-rgb),
+      0.28
+    );
+}
+
+/* birth */
+
+.layer-segment.birth
+.layer-cell {
+  background:
+    rgba(
+      var(--pressure-rgb),
+      0.03
+    );
+
+  border:
+    1.5px solid
+    rgba(
+      var(--pressure-rgb),
+      0.72
+    );
+
+  box-shadow:
+    0 0 0 1px
+    rgba(
+      var(--pressure-rgb),
+      0.16
+    ),
+    0 0 10px
+    rgba(
+      var(--pressure-rgb),
+      0.12
+    );
+
+  animation:
+    layerBirthPulse
+    0.7s
+    ease-in-out
+    infinite alternate;
+}
+
+@keyframes layerBirthPulse {
+  from {
+    transform:
+      scale(0.97);
+
+    opacity: 0.55;
+  }
+
+  to {
+    transform:
+      scale(1.03);
+
+    opacity: 0.82;
+  }
+}
+
+  .growth-block {
+  position: absolute;
+
+  border-radius: 4px;
+
+  background:
+    rgba(
+      var(--pressure-rgb),
+      0.78
+    );
+
+  opacity: 0;
+
+  transform:
+    translate(-50%, -50%)
+    scale(var(--growth-scale, 0.12));
+
+  transform-origin:
+    center center;
+
+  transition:
+    opacity 0.55s ease,
+    transform 0.65s
+    cubic-bezier(0.22, 1, 0.36, 1);
+
+  box-shadow:
+    0 0 10px
+    rgba(
+      var(--pressure-rgb),
+      0.18
+    );
+
+  pointer-events: none;
+}
+
+.growth-block.in {
+  opacity:
+    var(--growth-opacity, 0.7);
+}
+
+.growth-block.recent {
+  box-shadow:
+    0 0 16px
+    rgba(
+      var(--pressure-rgb),
+      0.24
+    );
+}
+
+.growth-block.birth {
+  background:
+    rgba(
+      var(--pressure-rgb),
+      0.18
+    );
+
+  box-shadow:
+    0 0 12px
+    rgba(
+      var(--pressure-rgb),
+      0.18
+    );
+}
+
+
+.merge-cell {
+  position: absolute;
+
+  width: 12px;
+  height: 12px;
+
+  border-radius: 2px;
+
+  background:
+    rgba(
+      var(--pressure-rgb),
+      0.82
+    );
+
+  border:
+    1.5px solid transparent;
+
+  box-shadow:
+    0 0 8px
+    rgba(
+      var(--pressure-rgb),
+      0.18
+    );
+
+  opacity: 0;
+
+  transform:
+    translate(-50%, -50%)
+    scale(0.9);
+
+  transition:
+    left 0.65s
+    cubic-bezier(0.22, 1, 0.36, 1),
+    top 0.65s
+    cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.45s ease,
+    transform 0.45s ease;
+
+  pointer-events: none;
+}
+
+.merge-cell.in {
+  opacity:
+    var(--merge-opacity, 0.76);
+
+  transform:
+    translate(-50%, -50%)
+    scale(1);
+}
+
+.merge-cell.recent {
+  box-shadow:
+    0 0 12px
+    rgba(
+      var(--pressure-rgb),
+      0.26
+    );
+}
+
+.merge-cell.birth {
+  background:
+    rgba(
+      var(--pressure-rgb),
+      0.08
+    );
+
+  border:
+    1.5px solid
+    rgba(
+      var(--pressure-rgb),
+      0.95
+    );
+
+  opacity: 1;
+}
+
+.merge-mass.in {
+  opacity:
+    var(--merge-opacity, 0.6);
+}
+
+.merge-mass.recent {
+  box-shadow:
+    0 0 24px
+    rgba(var(--pressure-rgb), 0.22);
+}
+
+.merge-mass.birth {
+  background:
+    rgba(var(--pressure-rgb), 0.16);
+}
+
+.compression-cell {
+  position: absolute;
+
+  width: 12px;
+  height: 12px;
+
+  border-radius: 2px;
+
+  background:
+    rgba(0, 30, 255, 0.78);
+
+  opacity: 0;
+
+  transform:
+    scale(0.92);
+
+  transition:
+    opacity 0.4s ease,
+    left 0.45s ease,
+    right 0.45s ease,
+    top 0.45s ease,
+    transform 0.4s ease;
+
+  box-shadow:
+    0 0 8px
+    rgba(0, 30, 255, 0.18);
+
+  pointer-events: none;
+}
+
+.compression-cell.in {
+  opacity:
+    var(--compression-opacity, 0.7);
+
+  transform:
+    scale(1);
+}
+
+.compression-cell.birth {
+  background:
+    rgba(0, 30, 255, 0.08);
+
+  border:
+    1.5px solid
+    rgba(0, 30, 255, 0.95);
+}
+
+  .packing-block.in {
+    opacity:
+      var(--packing-opacity, 0.8);
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+
+.packing-cell {
+  position: absolute;
+
+  width: 12px;
+  height: 12px;
+
+  border-radius: 2px;
+
+  background:
+    rgba(
+      var(--pressure-rgb),
+      0.82
+    );
+
+  box-shadow:
+    0 0 8px
+    rgba(
+      var(--pressure-rgb),
+      0.18
+    );
+}
+
+.packing-block.recent
+.packing-cell {
+  box-shadow:
+    0 0 12px
+    rgba(
+      var(--pressure-rgb),
+      0.28
+    );
+}
+
+.packing-block.birth
+.packing-cell {
+  background:
+  rgba(
+    var(--pressure-rgb),
+    0.08
+  );
+
+  border:
+    1.5px solid
+    rgba(
+      var(--pressure-rgb),
+      0.95
+    );
+}
+
+
+@keyframes layerBirthPulse {
+  from {
+    transform:
+      scale(0.97);
+
+    opacity: 0.55;
+  }
+
+  to {
+    transform:
+      scale(1.03);
+
+    opacity: 0.8;
+  }
+}
+
+    .cell.in {
+      opacity: var(--cell-opacity, 0.85);
+      transform: translateY(0) scale(var(--cell-scale, 1));
+    }
+
+    /* 최근 cell */
+    .cell.recent {
+      box-shadow:
+        0 0 12px
+        rgba(
+          var(--pressure-rgb),
+          0.28
+        );
+    }
+
+    .cell.birth {
+      background:
+        rgba(
+          var(--pressure-rgb),
+          0.05
+        )
+        !important;
+
+      border:
+        1.5px solid
+        rgba(
+          var(--pressure-rgb),
+          0.95
+        );
+
+      box-shadow:
+        0 0 0 1px
+        rgba(
+          var(--pressure-rgb),
+          0.28
+        ),
+        0 0 14px
+        rgba(
+          var(--pressure-rgb),
+          0.2
+        );
+
+      animation:
+        birthPulse
+        0.55s
+        ease-in-out
+        infinite alternate;
+    }
+    
+
+    @keyframes birthPulse {
+      from {
+        transform:
+          translateY(0)
+          scale(0.96);
+
+        opacity: 0.82;
+      }
+
+      to {
+        transform:
+          translateY(0)
+          scale(1.08);
+
+        opacity: 1;
+      }
+    }
+    
+    /* Cluster: 움직이지 않고, 새 unit만 추가되는 static dense accumulation */
+  .cell.cluster-cell {
+    transition:
+      opacity 0.45s ease,
+      transform 0.45s ease,
+      left 0.28s ease,
+      top 0.28s ease,
+      background 0.28s ease;
+  }
+
+
+    .orb {
+      position: absolute;
+      left: 21px;
+      top: 205px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #073DFF;
+      opacity: 0;
+      transition: all 300ms ease;
+      box-shadow: 0 0 24px rgba(7,61,255,0.65);
+    }
+
+    .orb::before,
+    .orb::after {
+      content: "";
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      border: 1px solid rgba(7,61,255,0.55);
+    }
+
+    .orb::after {
+      inset: -26px;
+      border-color: rgba(142,208,255,0.35);
+    }
+
+    .haze {
+      position: absolute;
+      left: -90px;
+      top: 70px;
+      width: 260px;
+      height: 580px;
+      background: radial-gradient(circle at 35% 30%, rgba(7,61,255,0.45), rgba(7,61,255,0.14) 40%, transparent 70%);
+      filter: blur(28px);
+      opacity: 0;
+      transition: all 300ms ease;
+    }
+
+    .surface-band {
+      position: absolute;
+      left: -20px;
+      top: 110px;
+      width: 42px;
+      height: 540px;
+      border-radius: 0 22px 22px 0;
+      background: linear-gradient(180deg, rgba(7,61,255,0.55), rgba(142,208,255,0.22));
+      opacity: 0;
+      transform: translateX(-18px) scaleX(0.55);
+      transition: all 300ms ease;
+    }
+
+    .check-card {
+      color: white;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 300px;
+      padding: 14px 16px 15px;
+      background: rgba(var(--pressure-rgb), 0.78);
+      border: 1px solid rgba(var(--pressure-rgb), 0.35);
+      border-radius: 0;
+      backdrop-filter: blur(14px);
+      z-index: 35;
+      opacity: 0;
+      transform: translate(-50%, -80%);
+      pointer-events: auto;
+      transition: all 260ms ease;
+    }
+
+    .check-card .eyebrow {
+      margin: 0 0 8px 0;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .check-card p {
+      margin: 0 0 18px 0;
+      font-size: 12px;
+      line-height: 1.35;
+      opacity: 0.92;
+      font-weight: 600;
+    }
+
+    .check-card h3 {
+      margin: 18px 0;
+      font-size: 18px;
+      line-height: 1.28;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .check-card .card-actions {
+      display: flex;
+      gap: 9px;
+      margin-top: 0;
+    }
+
+    .check-card .card-actions button {
+      flex: 1;
+      height: 34px;
+    }
+
+    .check-card.visible {
+      opacity: 1;
+
+      transform:
+        translate(-50%, -80%)
+        scale(1);
+    }
+
+    .eyebrow {
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.78;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 9px;
+    }
+
+    .card-actions button {
+      flex: 1;
+      height: 34px;
+      border: 1px solid rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.15);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .saved-toast {
+      position: absolute;
+      left: 54px;
+      right: 54px;
+      top: 360px;
+      padding: 13px 14px;
+      background: rgba(7,61,255,0.72);
+      border: 1px solid rgba(142,208,255,0.35);
+      z-index: 60;
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 260ms ease;
+      text-align: center;
+    }
+
+    .saved-toast.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .panel {
+      width: 330px;
+      padding: 24px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+
+    .panel h1 {
+      font-size: 20px;
+      margin: 0 0 8px;
+    }
+
+    .panel p {
+      margin: 0 0 24px;
+      font-size: 13px;
+      line-height: 1.5;
+      opacity: 0.72;
+    }
+
+    .control {
+      margin-bottom: 22px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      opacity: 0.7;
+      margin-bottom: 8px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    select,
+    .panel button {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.1);
+      color: white;
+      font-size: 14px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .button-row button {
+    flex: 1;
+    }
+
+    #playBtn {
+      background: rgba(0, 30, 255, 0.8);
+      border-color: rgba(0, 30, 255, 0.9);
+      color: white;
+    }
+
+    #playBtn.playing {
+      background: rgba(255,255,255,0.4);
+      border-color: rgba(255,255,255,0.28);
+      color: white;
+    }
+
+    .time-value {
+      font-size: 28px;
+      font-weight: 800;
+
+      margin-top: 0;
+      margin-bottom: 14px;
+
+      line-height: 1;
+    }
+
+    .status {
+      margin-top: 16px;
+
+      height: 70px;
+
+      padding: 12px 14px;
+
+      border-radius: 12px;
+
+      background:
+        rgba(0, 0, 0, 0.25);
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      gap: 3px;
+    }
+
+    .status-range {
+      font-size: 12px;
+      line-height: 1.2;
+
+      font-weight: 700;
+
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    .status-description {
+      font-size: 12px;
+      line-height: 1.25;
+
+      font-weight: 500;
+
+      color: rgba(255, 255, 255, 0.68);
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="workspace">
+    <div class="phone">
+      <div class="video-bg"></div>
+      <div class="city"></div>
+
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-icons">
+          <div class="wifi"></div>
+          <div class="battery"></div>
+        </div>
+      </div>
+
+      <div class="top-nav">
+        <div class="plus">+</div>
+        <div class="tabs">
+          <span>Reels</span>
+          <span>Friends</span>
+          <div class="top-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pressure-layer" id="pressureLayer"></div>
+
+      <div class="check-card" id="checkCard">
+        <div class="eyebrow">CHECK-IN</div>
+        <p>현재 사용 흐름을 확인해볼까요?</p>
+        <h3 id="checkTitle">지금 20분째 시청 중이에요.</h3>
+        <div class="card-actions">
+          <button onclick="continueFlow()">10분 더 보기</button>
+          <button onclick="wrapFlow()">이번 영상까지만</button>
+        </div>
+      </div>
+
+      <div class="right-actions">
+        <div class="action">
+          <div class="heart"></div>
+          <span>67K</span>
+        </div>
+        <div class="action">
+          <div class="comment"></div>
+          <span>342</span>
+        </div>
+        <div class="action">
+          <div class="share"></div>
+          <span>67</span>
+        </div>
+        <div class="action">
+          <div class="more"></div>
+        </div>
+      </div>
+
+      <div class="bottom-info">
+        <div class="user-row">
+          <div class="avatar"></div>
+          <span class="username">user_name</span>
+          <span class="verified"></span>
+          <span class="follow">Follow</span>
+        </div>
+        <div class="caption">Legend...</div>
+        <div class="followed">
+          <div class="small-avatars">
+            <span></span><span></span><span></span>
+          </div>
+          <span>Followed by...</span>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-icon home"></div>
+        <div class="nav-icon search"></div>
+        <div class="nav-icon plus-nav"></div>
+        <div class="nav-icon reels-nav"></div>
+        <div class="nav-icon profile"></div>
+        <div class="home-indicator"></div>
+      </div>
+
+      <div class="saved-toast" id="savedToast">
+        현재 흐름이 하나의 Flow로 저장되었어요.
+      </div>
+    </div>
+
+    <div class="panel">
+      <h1>Quick Formative Check</h1>
+        <p>
+          Select the condition instructed by the researcher.
+        </p>
+
+      <div class="control" style="display:none;">
+
+        <div class="time-value">
+          <span id="timeValue">0</span> min
+        </div>
+
+        <label>Time spent watching</label>
+
+        <input
+          id="timeSlider"
+          type="range"
+          min="0"
+          max="60"
+          value="0"
+          step="1"
+        />
+
+        <div class="status" id="statusText">
+          <div class="status-range">
+            0–5분
+          </div>
+
+          <div class="status-description">
+            개입 없음
+          </div>
+        </div>
+
+      </div>
+
+      <div class="control">
+        <label>Test Mode</label>
+        <select id="testPartSelect">
+          <option value="1">Part 1</option>
+          <option value="2">Part 2</option>
+        </select>
+      </div>
+
+      <div class="control">
+        <label>Condition</label>
+          <select id="modeSelect">
+            <option value="edge-grid">A</option>
+            <option value="distributed-grid">B</option>
+            <option value="cluster-grid">C</option>
+            <option value="layered-stack">D</option>
+            <option value="tetris-packing">E</option>
+            <option value="growing-blocks">F</option>
+            <option value="merging-mass">G</option>
+          </select>
+      </div>
+
+      <div class="control" style="display:none;">
+      <label>Color</label>
+
+      <select id="colorSelect">
+        <option value="blue">Blue</option>
+        <option value="white" selected>White</option>
+        <option value="black">Black</option>    
+      </select>
+    </div>
+
+
+      <div class="control">
+        <div class="button-row">
+            <button id="playBtn" type="button">Play</button>
+            <button type="button" onclick="resetFlow()">Reset</button>
+        </div>
+    </div>
+
+    </div>
+  </div>
+
+  <script>
+    const pressureLayer = document.getElementById("pressureLayer");
+    const timeSlider = document.getElementById("timeSlider");
+    const timeValue = document.getElementById("timeValue");
+    const testPartSelect = document.getElementById("testPartSelect");
+    const colorSelect = document.getElementById("colorSelect");
+    const statusText = document.getElementById("statusText");
+    const checkCard = document.getElementById("checkCard");
+    const checkTitle = document.getElementById("checkTitle");
+    const savedToast = document.getElementById("savedToast");
+
+    let continued = false;
+    let lastMode = null;
+
+    let edgeCells = [];
+    let distributedCells = [];
+    let clusterCells = [];
+    let layeredCells = [];
+    let tetrisCells = [];
+    let growthBlocks = [];
+    let mergeMasses = [];
+    let compressionCells = [];
+
+    let isPlaying = false;
+    let playTimer = null;
+
+    let nextCheckMinute = 20;
+    const FIRST_CHECK_MINUTE = 20;
+    const CHECK_INTERVAL = 10;
+    const MAX_PLAY_MINUTES = 60;
+    let TEST_PART = 1;
+    const PART1_STOP_MINUTE = 30;
+
+    const PLAY_STEP = 1;
+    const PLAY_SPEED_MS = 260;
+
+    const EDGE_COLUMNS = 2;
+    const MAX_EDGE_CELLS = 20;
+    const EDGE_CELL_INTERVAL =
+      (MAX_PLAY_MINUTES - 5) /
+      (MAX_EDGE_CELLS - 1);
+
+    const TETRIS_CELL_SIZE = 12;
+    const TETRIS_GAP = 4;
+
+    const TETRIS_COLUMNS = 6;
+    const TETRIS_MAX_ROWS = 12;
+
+    const TETRIS_MAX_CELLS =
+      TETRIS_COLUMNS * TETRIS_MAX_ROWS;
+
+    const TETRIS_CELL_INTERVAL =
+      EDGE_CELL_INTERVAL;
+
+    const playBtn = document.getElementById("playBtn");
+
+    const PHONE_WIDTH = 393;
+
+    const PRESSURE_LEFT_MARGIN = 18;
+    const PRESSURE_RIGHT_EXCLUSION = 88;
+
+    const PRESSURE_MIN_X =
+      PRESSURE_LEFT_MARGIN;
+
+    const PRESSURE_MAX_X =
+      PHONE_WIDTH -
+      PRESSURE_RIGHT_EXCLUSION;
+
+
+    function clampPressureX(
+      x,
+      width = 12
+    ) {
+      return Math.max(
+        PRESSURE_MIN_X,
+        Math.min(
+          x,
+          PRESSURE_MAX_X -
+          width
+        )
+      );
+    }
+
+
+    function clampPressureCenterX(
+      x,
+      radius = 6
+    ) {
+      return Math.max(
+        PRESSURE_MIN_X +
+        radius,
+
+        Math.min(
+          x,
+          PRESSURE_MAX_X -
+          radius
+        )
+      );
+    }
+
+    function getPressureLevel(minutes) {
+    if (minutes <= 5) return 0;
+
+    const startMinute = Math.max(5, nextCheckMinute - 15);
+    const endMinute = nextCheckMinute;
+
+    if (minutes >= endMinute) return 1;
+
+    return Math.min(1, Math.max(0, (minutes - startMinute) / (endMinute - startMinute)));
+    }
+
+    function getStatus(minutes) {
+      if (minutes < 5) {
+        return `
+          <div class="status-range">
+            0–5분
+          </div>
+
+          <div class="status-description">
+            개입 없음
+          </div>
+        `;
+      }
+
+      if (minutes < nextCheckMinute) {
+        return `
+          <div class="status-range">
+            ${nextCheckMinute}분 확인 지점까지
+          </div>
+
+          <div class="status-description">
+            Pressure accumulation 진행 중
+          </div>
+        `;
+      }
+
+      return `
+        <div class="status-range">
+          ${nextCheckMinute}분
+        </div>
+
+        <div class="status-description">
+          Check-in 지점
+        </div>
+      `;
+    }
+
+    const PRESSURE_COLORS = {
+      blue: [0, 30, 255],
+      white: [255, 255, 255],
+      black: [0, 0, 0]
+    };
+
+    function pressureColor(alpha) {
+      const [r, g, b] =
+        PRESSURE_COLORS[
+          colorSelect.value
+        ];
+
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function updatePressureColor() {
+    const [r, g, b] =
+      PRESSURE_COLORS[
+        colorSelect.value
+      ];
+
+    pressureLayer.style.setProperty(
+      "--pressure-rgb",
+      `${r}, ${g}, ${b}`
+    );
+
+    checkCard.style.setProperty(
+      "--pressure-rgb",
+      `${r}, ${g}, ${b}`
+    );
+
+    const isWhite =
+      colorSelect.value === "white";
+
+    checkCard.style.color =
+      isWhite
+        ? "black"
+        : "white";
+
+    const checkButtons =
+      checkCard.querySelectorAll(
+        "button"
+      );
+
+    checkButtons.forEach(
+      (button) => {
+        button.style.color =
+          isWhite
+            ? "black"
+            : "white";
+
+        button.style.borderColor =
+          isWhite
+            ? "rgba(0,0,0,0.35)"
+            : "rgba(255,255,255,0.45)";
+
+        button.style.background =
+          isWhite
+            ? "rgba(0,0,0,0.08)"
+            : "rgba(255,255,255,0.15)";
+      }
+    );
+
+    render();
+  }
+    
+    function clearLayer() {
+    pressureLayer.innerHTML = "";
+
+    edgeCells = [];
+    distributedCells = [];
+    clusterCells = [];
+    layeredCells = [];
+    tetrisCells = [];
+    growthBlocks = [];
+    mergeMasses = [];
+    compressionCells = [];
+
+    lastClusterCount = 0;
+  }
+
+    function makeCell(x, y, opacity, scale = 1, color = "#073DFF", delay = 0) {
+  const cell = document.createElement("div");
+  cell.className = "cell";
+  cell.style.left = `${x}px`;
+  cell.style.top = `${y}px`;
+  cell.style.background = color;
+  cell.style.setProperty("--cell-opacity", opacity);
+  cell.style.setProperty("--cell-scale", scale);
+
+  pressureLayer.appendChild(cell);
+
+  setTimeout(() => {
+    requestAnimationFrame(() => {
+      cell.classList.add("in");
+    });
+  }, delay);
+
+  return cell;
+}
+
+function removeExtraCells(cellArray, targetCount) {
+  while (cellArray.length > targetCount) {
+    const cell = cellArray.pop();
+
+    if (cell) {
+      cell.classList.remove("in");
+      setTimeout(() => {
+        cell.remove();
+      }, 260);
+    }
+  }
+}
+
+const EDGE_LEFT_X = 18;
+const EDGE_RIGHT_X = 34;
+
+const EDGE_BASE_Y = 118;
+const EDGE_ROW_STEP = 14;
+
+// 이 지점까지만 아래로 내려가고,
+// 그 이후에는 오른쪽에 새로운 2열 band를 만들어 다시 위에서 시작
+const EDGE_WRAP_Y = 620;
+
+// 다음 2열 band가 오른쪽으로 이동하는 거리
+const EDGE_BAND_SHIFT = 42;
+
+
+// ------------------------------------
+// EDGE ROW PATTERN
+// ------------------------------------
+
+// 가로 정렬은 고정.
+// 불규칙성은
+// 왼쪽만 / 오른쪽만 / 둘 다
+// 그리고 세로 간격의 차이로 만든다.
+
+const EDGE_ROW_PATTERNS = [
+  { slots: ["l", "r"], extraGap: 0 },
+  { slots: ["r"],      extraGap: 7 },
+  { slots: ["l"],      extraGap: 4 },
+  { slots: ["l", "r"], extraGap: 3 },
+  { slots: ["r"],      extraGap: 6 },
+  { slots: ["l", "r"], extraGap: 2 },
+  { slots: ["l"],      extraGap: 5 },
+  { slots: ["l", "r"], extraGap: 1 }
+];
+
+
+// ------------------------------------
+// BUILD EDGE LAYOUT
+// ------------------------------------
+
+function buildEdgeLayout(maxCells) {
+  const layout = [];
+
+  let bandIndex = 0;
+  let patternIndex = 0;
+  let y = EDGE_BASE_Y;
+
+  while (layout.length < maxCells) {
+
+    const pattern =
+      EDGE_ROW_PATTERNS[
+        patternIndex % EDGE_ROW_PATTERNS.length
+      ];
+
+    // 첫 번째 band:
+    // 18 / 34
+    //
+    // 두 번째 band:
+    // 60 / 76
+    //
+    // 세 번째 band:
+    // 102 / 118
+    // ...
+    const bandOffset =
+      bandIndex * EDGE_BAND_SHIFT;
+
+    const leftX =
+      EDGE_LEFT_X + bandOffset;
+
+    const rightX =
+      EDGE_RIGHT_X + bandOffset;
+
+
+    // LEFT CELL
+    if (
+      pattern.slots.includes("l") &&
+      layout.length < maxCells
+    ) {
+      layout.push({
+        x: leftX,
+        y: y
+      });
+    }
+
+
+    // RIGHT CELL
+    if (
+      pattern.slots.includes("r") &&
+      layout.length < maxCells
+    ) {
+      layout.push({
+        x: rightX,
+        y: y
+      });
+    }
+
+
+    // 다음 row 위치
+    const nextY =
+      y +
+      EDGE_ROW_STEP +
+      pattern.extraGap;
+
+
+    // ------------------------------------
+    // WRAP
+    // ------------------------------------
+
+    // 아래까지 내려왔으면
+    // 오른쪽에 새로운 2열 band를 만들고
+    // 다시 위에서부터 시작
+    if (nextY > EDGE_WRAP_Y) {
+
+      bandIndex += 1;
+
+      patternIndex = 0;
+
+      y = EDGE_BASE_Y;
+
+    } else {
+
+      patternIndex += 1;
+
+      y = nextY;
+    }
+  }
+
+  return layout.slice(0, maxCells);
+}
+
+
+// 전체 cell 위치 미리 생성
+const EDGE_LAYOUT =
+  buildEdgeLayout(MAX_EDGE_CELLS);
+
+
+// ------------------------------------
+// EDGE CELL DATA
+// ------------------------------------
+
+function getEdgeCellData(
+  i,
+  count,
+  level
+) {
+
+  const slot =
+    EDGE_LAYOUT[i];
+
+
+  // 혹시 layout 범위를 넘어가는 상황 방지
+  if (!slot) {
+    return null;
+  }
+
+
+  const progress =
+    count <= 1
+      ? 1
+      : i / (count - 1);
+
+
+  const ageFromNewest =
+    count - 1 - i;
+
+
+  // ------------------------------------
+  // OPACITY
+  // ------------------------------------
+
+  // 오래된 cell은 조금 잔잔하고
+  // 최근 cell일수록 조금 더 선명하게
+  let opacity =
+    Math.max(
+      0.34,
+      Math.min(
+        0.9,
+        0.45 +
+        progress * 0.35 -
+        ageFromNewest * 0.01
+      )
+    );
+
+
+  // ------------------------------------
+  // SCALE
+  // ------------------------------------
+
+  let scale =
+    0.96 + level * 0.04;
+
+
+  // ------------------------------------
+  // STATE
+  // ------------------------------------
+
+  const isNewest =
+    i === count - 1;
+
+
+  const isRecent =
+    i >= Math.max(
+      0,
+      count - 3
+    ) &&
+    i < count - 1;
+
+
+  // 최근 cell
+  if (isRecent) {
+
+    scale = 1.01;
+
+    opacity =
+      Math.min(
+        0.95,
+        opacity + 0.06
+      );
+  }
+
+
+  // 가장 최근 cell
+  // → 현재 생성되고 있는 pressure
+  if (isNewest) {
+
+    scale = 1.06;
+
+    opacity = 1;
+  }
+
+
+  return {
+
+  x:
+    clampPressureX(
+      slot.x,
+      12
+    ),
+
+  y: slot.y,
+
+  opacity,
+  scale,
+
+  color:
+    pressureColor(0.82),
+
+  isNewest,
+  isRecent
+  };
+
+}
+
+// ------------------------------------
+// RENDER EDGE GRID
+// ------------------------------------
+
+function renderEdgeGrid(level) {
+
+  const minutes =
+    Number(timeSlider.value);
+
+
+  // 0–5분에는 cell 없음
+  if (minutes <= 5) {
+
+    removeExtraCells(
+      edgeCells,
+      0
+    );
+
+    return;
+  }
+
+
+  // ------------------------------------
+  // CELL COUNT
+  // ------------------------------------
+
+  const count =
+    Math.min(
+
+      MAX_EDGE_CELLS,
+
+      Math.floor(
+        (minutes - 5) /
+        EDGE_CELL_INTERVAL
+      ) + 1
+    );
+
+
+  // 필요 없는 cell 제거
+  removeExtraCells(
+    edgeCells,
+    count
+  );
+
+
+  // ------------------------------------
+  // CREATE / UPDATE CELLS
+  // ------------------------------------
+
+  for (
+    let i = 0;
+    i < count;
+    i++
+  ) {
+
+    const data =
+      getEdgeCellData(
+        i,
+        count,
+        level
+      );
+
+
+    if (!data) {
+      continue;
+    }
+
+
+    // 아직 cell이 없으면 생성
+    if (!edgeCells[i]) {
+
+      const newCell =
+        makeCell(
+
+          data.x,
+          data.y,
+
+          data.opacity,
+          data.scale,
+
+          data.color,
+
+          i * 18
+        );
+
+
+      edgeCells[i] =
+        newCell;
+
+    } else {
+
+      // 이미 있는 cell이면 업데이트
+      const cell =
+        edgeCells[i];
+
+
+      cell.style.left =
+        `${data.x}px`;
+
+
+      cell.style.top =
+        `${data.y}px`;
+
+
+      cell.style.background =
+        data.color;
+
+
+      cell.style.setProperty(
+        "--cell-opacity",
+        data.opacity
+      );
+
+
+      cell.style.setProperty(
+        "--cell-scale",
+        data.scale
+      );
+    }
+  }
+
+
+  // ------------------------------------
+  // CELL STATE
+  // ------------------------------------
+
+  for (
+    let i = 0;
+    i < count;
+    i++
+  ) {
+
+    const data =
+      getEdgeCellData(
+        i,
+        count,
+        level
+      );
+
+
+    const cell =
+      edgeCells[i];
+
+
+    if (
+      !cell ||
+      !data
+    ) {
+      continue;
+    }
+
+
+    // 마지막 cell
+    // outline + pulse
+    cell.classList.toggle(
+      "birth",
+      data.isNewest
+    );
+
+
+    // 최근 cell
+    cell.classList.toggle(
+      "recent",
+      data.isRecent
+    );
+  }
+}
+
+
+  const distributedSlots = [
+
+  // --------------------------------
+  // UPPER AREA
+  // sparse singles + pairs
+  // --------------------------------
+
+  { x: 24,  y: 120 },
+  { x: 40,  y: 120 },
+
+  { x: 82,  y: 140 },
+  { x: 98,  y: 140 },
+
+  { x: 150, y: 126 },
+
+  { x: 220, y: 150 },
+
+  { x: 274, y: 176 },
+  { x: 290, y: 176 },
+
+
+  // --------------------------------
+  // UPPER-MIDDLE
+  // --------------------------------
+
+  { x: 32,  y: 214 },
+  { x: 48,  y: 214 },
+
+  { x: 96,  y: 236 },
+
+  { x: 188, y: 232 },
+
+  { x: 238, y: 214 },
+  { x: 238, y: 230 },
+
+  { x: 292, y: 248 },
+
+
+  // --------------------------------
+  // MIDDLE AREA
+  // --------------------------------
+
+  { x: 48,  y: 304 },
+
+  { x: 88,  y: 330 },
+  { x: 104, y: 330 },
+
+  { x: 154, y: 292 },
+
+  { x: 202, y: 318 },
+
+  { x: 250, y: 286 },
+  { x: 266, y: 286 },
+
+
+  // --------------------------------
+  // LOWER-MIDDLE
+  // --------------------------------
+
+  { x: 28,  y: 390 },
+
+  { x: 116, y: 392 },
+  { x: 132, y: 392 },
+
+  { x: 184, y: 430 },
+
+  { x: 230, y: 402 },
+
+  { x: 278, y: 438 },
+
+
+  // --------------------------------
+  // LOWER AREA
+  // leave more breathing room
+  // --------------------------------
+
+  { x: 54,  y: 500 },
+
+  { x: 158, y: 492 },
+  { x: 174, y: 492 },
+
+  { x: 220, y: 530 },
+
+  { x: 310, y: 548 }
+
+];
+
+
+function getDistributedCellData(i, count, level) {
+  const slot = distributedSlots[i];
+
+  if (!slot) {
+    return null;
+  }
+
+  const x =
+    clampPressureX(
+      slot.x
+    );
+
+  const y =
+    slot.y;
+
+  const progress =
+    count <= 1
+      ? 1
+      : i / (count - 1);
+
+  const ageFromNewest =
+    count - 1 - i;
+
+  const isNewest =
+    i === count - 1;
+
+  const isRecent =
+    i >= Math.max(
+      0,
+      count - 3
+    ) &&
+    i < count - 1;
+
+  let opacity =
+    Math.max(
+      0.34,
+      Math.min(
+        0.9,
+        0.45 +
+        progress * 0.35 -
+        ageFromNewest * 0.01
+      )
+    );
+
+  let scale =
+    0.96 +
+    level * 0.04;
+
+  if (isRecent) {
+    scale = 1.01;
+
+    opacity =
+      Math.min(
+        0.95,
+        opacity + 0.06
+      );
+  }
+
+  if (isNewest) {
+    scale = 1.06;
+    opacity = 1;
+  }
+
+  return {
+    x,
+    y,
+    opacity,
+    scale,
+    color:
+      pressureColor(0.82),
+    isNewest,
+    isRecent
+  };
+}
+
+function renderDistributedGrid(level) {
+  const minutes =
+    Number(timeSlider.value);
+
+  if (minutes <= 5) {
+    removeExtraCells(
+      distributedCells,
+      0
+    );
+
+    return;
+  }
+
+  const MAX_DISTRIBUTED_CELLS = 16;
+
+  const DISTRIBUTED_CELL_INTERVAL =
+  (MAX_PLAY_MINUTES - 5) /
+  (MAX_DISTRIBUTED_CELLS - 1);
+
+  const count = Math.min(
+    MAX_DISTRIBUTED_CELLS,
+    Math.floor(
+      (minutes - 5) /
+      DISTRIBUTED_CELL_INTERVAL
+    ) + 1
+  );
+
+  removeExtraCells(
+    distributedCells,
+    count
+  );
+
+  for (let i = 0; i < count; i++) {
+    const data =
+      getDistributedCellData(
+        i,
+        count,
+        level
+      );
+
+    if (!data) continue;
+
+    if (!distributedCells[i]) {
+      const newCell =
+        makeCell(
+          data.x,
+          data.y,
+          data.opacity,
+          data.scale,
+          data.color,
+          i * 18
+        );
+
+      distributedCells[i] =
+        newCell;
+
+    } else {
+      const cell =
+        distributedCells[i];
+
+      cell.style.left =
+        `${data.x}px`;
+
+      cell.style.top =
+        `${data.y}px`;
+
+      cell.style.background =
+        data.color;
+
+      cell.style.setProperty(
+        "--cell-opacity",
+        data.opacity
+      );
+
+      cell.style.setProperty(
+        "--cell-scale",
+        data.scale
+      );
+    }
+  }
+
+  // 가장 최근 cell과 recent cell 상태 적용
+  for (let i = 0; i < count; i++) {
+    const data =
+      getDistributedCellData(
+        i,
+        count,
+        level
+      );
+
+    const cell =
+      distributedCells[i];
+
+    if (!cell || !data) continue;
+
+    cell.classList.toggle(
+      "birth",
+      data.isNewest
+    );
+
+    cell.classList.toggle(
+      "recent",
+      data.isRecent
+    );
+  }
+}
+
+// ========================================
+// 03. CLUSTER GRID
+// Static Dense Accumulation
+// ========================================
+
+const CLUSTER_MAX_CELLS = 16;
+
+const CLUSTER_CELL_INTERVAL =
+  (MAX_PLAY_MINUTES - 5) /
+  (CLUSTER_MAX_CELLS - 1);
+
+
+/*
+  Cluster 핵심:
+  - 기존 cell은 움직이지 않음
+  - 새 cell만 추가
+  - 한정된 영역 안에서 점점 밀도가 높아짐
+  - 완벽한 정사각형/다이아몬드처럼 보이지 않도록 비대칭 구성
+*/
+
+const CLUSTER_ZONES = [
+  { x: 90,  y: 250 },
+  { x: 240, y: 250 },
+  { x: 90,  y: 430 },
+  { x: 240, y: 430 }
+];
+
+let currentClusterZone =
+  CLUSTER_ZONES[
+    Math.floor(Math.random() * CLUSTER_ZONES.length)
+  ];
+
+/*
+  상대 좌표.
+  초반에는 중심부에서 시작하고,
+  시간이 지날수록 주변 빈 공간을 채우며
+  전체 밀도가 높아지는 순서.
+*/
+
+const CLUSTER_OFFSETS = [
+  [0, 0],
+
+  [-16, 0],
+  [16, 0],
+  [0, -16],
+
+  [-16, -16],
+  [16, 16],
+  [32, 0],
+
+  [-32, 0],
+  [0, 16],
+  [32, -16],
+
+  [-16, 32],
+  [16, 32],
+  [48, 0],
+
+  [-32, 16],
+  [0, 48],
+
+  [32, 32],
+  [48, 16],
+
+  [-16, -32],
+  [16, -32],
+
+  [-48, 16],
+  [-32, 32],
+
+  [0, 64],
+  [16, 48],
+  [48, 32]
+];
+
+
+function getClusterCellData(i, count, level) {
+
+  const offset =
+    CLUSTER_OFFSETS[i];
+
+  const x =
+  clampPressureX(
+    currentClusterZone.x +
+    offset[0]
+  );
+
+  const y =
+  currentClusterZone.y +
+  offset[1];
+
+
+  // 최근 cell이 조금 더 선명
+  const progress =
+    count <= 1
+      ? 1
+      : i / (count - 1);
+
+
+  let opacity =
+    Math.max(
+      0.38,
+      Math.min(
+        0.9,
+        0.48 +
+        progress * 0.34
+      )
+    );
+
+
+  let scale =
+    0.96 +
+    level * 0.04;
+
+
+  const isNewest =
+    i === count - 1;
+
+
+  const isRecent =
+    i >= Math.max(
+      0,
+      count - 3
+    ) &&
+    i < count - 1;
+
+
+  if (isRecent) {
+    opacity =
+      Math.min(
+        0.95,
+        opacity + 0.05
+      );
+
+    scale = 1.01;
+  }
+
+
+  if (isNewest) {
+    opacity = 1;
+    scale = 1.06;
+  }
+
+
+  return {
+    x,
+    y,
+    opacity,
+    scale,
+    color:
+      pressureColor(0.82),
+    isNewest,
+    isRecent
+  };
+}
+
+
+function renderClusterGrid(level) {
+
+  const minutes =
+    Number(timeSlider.value);
+
+
+  // 0–5분: pressure 없음
+  if (minutes <= 5) {
+
+    removeExtraCells(
+      clusterCells,
+      0
+    );
+
+    return;
+  }
+
+
+  // 전체 session time 기준으로 누적
+  const count =
+    Math.min(
+
+      CLUSTER_MAX_CELLS,
+
+      Math.floor(
+        (minutes - 5) /
+        CLUSTER_CELL_INTERVAL
+      ) + 1
+
+    );
+
+
+  // 뒤로 이동했을 때 필요 없는 cell 제거
+  removeExtraCells(
+    clusterCells,
+    count
+  );
+
+
+  // 새 cell 생성 / 기존 cell 유지
+  for (
+    let i = 0;
+    i < count;
+    i++
+  ) {
+
+    const data =
+      getClusterCellData(
+        i,
+        count,
+        level
+      );
+
+
+    if (!clusterCells[i]) {
+
+      const newCell =
+        makeCell(
+
+          data.x,
+          data.y,
+
+          data.opacity,
+          data.scale,
+
+          data.color,
+
+          i * 18
+
+        );
+
+
+      newCell.classList.add(
+        "cluster-cell"
+      );
+
+
+      clusterCells[i] =
+        newCell;
+
+    } else {
+
+      const cell =
+        clusterCells[i];
+
+
+      // 기존 cell은 위치 변화 없음
+      cell.style.left =
+        `${data.x}px`;
+
+      cell.style.top =
+        `${data.y}px`;
+
+
+      cell.style.background =
+        data.color;
+
+
+      cell.style.setProperty(
+        "--cell-opacity",
+        data.opacity
+      );
+
+
+      cell.style.setProperty(
+        "--cell-scale",
+        data.scale
+      );
+    }
+  }
+
+
+  // newest / recent 상태 반영
+  for (
+    let i = 0;
+    i < count;
+    i++
+  ) {
+
+    const data =
+      getClusterCellData(
+        i,
+        count,
+        level
+      );
+
+
+    const cell =
+      clusterCells[i];
+
+
+    if (!cell) continue;
+
+
+    cell.classList.toggle(
+      "birth",
+      data.isNewest
+    );
+
+
+    cell.classList.toggle(
+      "recent",
+      data.isRecent
+    );
+  }
+}
+
+const LAYER_CELL_SIZE = 12;
+const LAYER_CELL_GAP = 3;
+
+const LAYER_BASE_X = 18;
+const LAYER_GROUND_Y = 630;
+
+const LAYER_ROW_GAP = 6;
+const LAYER_SEGMENT_INTERVAL = 10;
+
+
+// ------------------------------------
+// ROW POSITION
+// ------------------------------------
+//
+// 줄마다 아주 약간 위치 차이만 줌.
+// 대각선으로 계속 이동하지 않음.
+//
+
+const LAYER_ROW_OFFSETS = [
+  0,
+  8,
+  2,
+  12,
+  5,
+  10
+];
+
+
+// ------------------------------------
+// ACCUMULATION SEQUENCE
+// ------------------------------------
+//
+// 하나의 item = 하나의 horizontal segment
+//
+// 새로운 줄을 만들기도 하고,
+// 이전 줄로 돌아가서 이어 붙이기도 함.
+//
+
+const LAYER_SEGMENTS = [
+
+  // bottom layer begins
+  { row: 0, startCol: 0, count: 8 },
+
+  // new layer
+  { row: 1, startCol: 1, count: 7 },
+
+  // bottom extends
+  { row: 0, startCol: 8, count: 7 },
+
+  // new layer
+  { row: 2, startCol: 0, count: 8 },
+
+  // row 1 extends
+  { row: 1, startCol: 8, count: 6 },
+
+  // new layer
+  { row: 3, startCol: 1, count: 7 },
+
+  // row 2 extends
+  { row: 2, startCol: 8, count: 7 },
+
+  // bottom reaches further right
+  { row: 0, startCol: 15, count: 5 },
+
+  // new layer
+  { row: 4, startCol: 0, count: 8 },
+
+  // row 3 extends
+  { row: 3, startCol: 8, count: 7 },
+
+  // row 1 extends further
+  { row: 1, startCol: 14, count: 5 },
+
+  // new upper layer
+  { row: 5, startCol: 1, count: 7 },
+
+  // row 4 extends
+  { row: 4, startCol: 8, count: 7 },
+
+  // row 2 reaches further right
+  { row: 2, startCol: 15, count: 5 }
+];
+
+
+// ------------------------------------
+// CREATE SEGMENT
+// ------------------------------------
+
+function createLayerSegment(
+  index,
+  data
+) {
+  const segment =
+    document.createElement("div");
+
+  segment.className =
+    "layer-segment";
+
+  const rowOffset =
+    LAYER_ROW_OFFSETS[
+      data.row %
+      LAYER_ROW_OFFSETS.length
+    ];
+
+  const rawX =
+  LAYER_BASE_X +
+  rowOffset +
+  data.startCol *
+  (
+    LAYER_CELL_SIZE +
+    LAYER_CELL_GAP
+  );
+
+  const segmentWidth =
+    data.count *
+    LAYER_CELL_SIZE +
+    (data.count - 1) *
+    LAYER_CELL_GAP;
+
+  const LAYER_RIGHT_EXCLUSION = 72;
+
+  const layerMaxX =
+    PHONE_WIDTH -
+    LAYER_RIGHT_EXCLUSION;
+
+  const x =
+    Math.max(
+      PRESSURE_MIN_X,
+      Math.min(
+        rawX,
+        layerMaxX -
+        segmentWidth
+      )
+    );
+
+  const y =
+    LAYER_GROUND_Y -
+    data.row *
+    (
+      LAYER_CELL_SIZE +
+      LAYER_ROW_GAP
+    );
+
+  segment.style.left =
+    `${x}px`;
+
+  segment.style.top =
+    `${y}px`;
+
+  for (
+    let i = 0;
+    i < data.count;
+    i++
+  ) {
+    const cell =
+      document.createElement("div");
+
+    cell.className =
+      "layer-cell";
+
+    cell.style.left =
+      `${
+        i *
+        (
+          LAYER_CELL_SIZE +
+          LAYER_CELL_GAP
+        )
+      }px`;
+
+    segment.appendChild(cell);
+  }
+
+  pressureLayer.appendChild(
+    segment
+  );
+
+  requestAnimationFrame(
+    () => {
+      segment.classList.add("in");
+    }
+  );
+
+  return segment;
+}
+
+
+// ------------------------------------
+// RENDER LAYERED STACK
+// ------------------------------------
+
+function renderLayeredStack(level) {
+  const minutes =
+    Number(timeSlider.value);
+
+  if (minutes <= 5) {
+    layeredCells.forEach(
+      segment => {
+        if (segment) {
+          segment.remove();
+        }
+      }
+    );
+
+    layeredCells = [];
+
+    return;
+  }
+
+  const count =
+    Math.min(
+      LAYER_SEGMENTS.length,
+      Math.floor(
+        (minutes - 5) /
+        LAYER_SEGMENT_INTERVAL
+      ) + 1
+    );
+
+  while (
+    layeredCells.length >
+    count
+  ) {
+    const segment =
+      layeredCells.pop();
+
+    if (segment) {
+      segment.remove();
+    }
+  }
+
+  for (
+    let i = 0;
+    i < count;
+    i++
+  ) {
+    const isNewest =
+      i === count - 1;
+
+    const isRecent =
+      i >= Math.max(
+        0,
+        count - 3
+      ) &&
+      i < count - 1;
+
+    const progress =
+      count <= 1
+        ? 1
+        : i / (count - 1);
+
+    const opacity =
+      0.38 +
+      progress * 0.34;
+
+    if (!layeredCells[i]) {
+      layeredCells[i] =
+        createLayerSegment(
+          i,
+          LAYER_SEGMENTS[i]
+        );
+    }
+
+    const segment =
+      layeredCells[i];
+
+    segment.style.setProperty(
+      "--layer-opacity",
+      opacity
+    );
+
+    segment.classList.toggle(
+      "birth",
+      isNewest
+    );
+
+    segment.classList.toggle(
+      "recent",
+      isRecent
+    );
+  }
+}
+
+const PACK_CELL = 12;
+const PACK_GAP = 3;
+
+const PACK_BASE_X = 26;
+const PACK_GROUND_Y = 650;
+
+const PACK_BLOCKS = [
+
+// 1
+{
+  x: 0,
+  y: 0,
+  cells: [
+    [0, 0],
+    [1, 0],
+    [0, 1]
+  ]
+},
+
+// 2
+{
+  x: 3,
+  y: 0,
+  cells: [
+    [0, 0],
+    [1, 0],
+    [1, 1]
+  ]
+},
+
+// 3
+{
+  x: 1,
+  y: 2,
+  cells: [
+    [0, 0],
+    [0, 1],
+    [1, 1]
+  ]
+},
+
+// 4
+{
+  x: 5,
+  y: 1,
+  cells: [
+    [0, 0],
+    [1, 0],
+    [2, 0]
+  ]
+},
+
+// 5
+{
+  x: 4,
+  y: 3,
+  cells: [
+    [0, 0],
+    [1, 0],
+    [0, 1],
+    [1, 1]
+  ]
+},
+
+// 6
+{
+  x: 7,
+  y: 2,
+  cells: [
+    [0, 0],
+    [0, 1],
+    [1, 1],
+    [1, 2]
+  ]
+},
+
+// 7
+{
+  x: 2,
+  y: 5,
+  cells: [
+    [0, 0],
+    [1, 0],
+    [1, 1]
+  ]
+},
+
+// 8
+{
+  x: 9,
+  y: 0,
+  cells: [
+    [0, 0],
+    [0, 1],
+    [1, 1]
+  ]
+},
+
+// 9
+{
+  x: 9,
+  y: 3,
+  cells: [
+    [0, 0],
+    [1, 0],
+    [0, 1]
+  ]
+},
+
+// 10
+{
+  x: 11,
+  y: 1,
+  cells: [
+    [0, 0],
+    [0, 1],
+    [1, 1]
+  ]
+},
+
+  // 11
+  {
+    x: 4,
+    y: 5,
+    cells: [
+      [0, 0],
+      [1, 0],
+      [2, 0],
+      [1, 1]
+    ]
+  },
+
+  // 12
+  {
+    x: 13,
+    y: 4,
+    cells: [
+      [0, 0],
+      [1, 0],
+      [1, 1]
+    ]
+  },
+
+  // 13
+  {
+    x: 1,
+    y: 6,
+    cells: [
+      [0, 0],
+      [0, 1],
+      [1, 1]
+    ]
+  },
+
+  // 14
+  {
+    x: 7,
+    y: 1,
+    cells: [
+      [0, 0],
+      [1, 0],
+      [0, 1]
+    ]
+  },
+
+  // 15
+  {
+    x: 9,
+    y: 6,
+    cells: [
+      [0, 0],
+      [1, 0],
+      [2, 0],
+      [1, 1]
+    ]
+  },
+
+  // 16
+  {
+    x: 4,
+    y: 8,
+    cells: [
+      [0, 0],
+      [1, 0],
+      [1, 1]
+    ]
+  },
+
+  // 17
+  {
+    x: 14,
+    y: 6,
+    cells: [
+      [0, 0],
+      [0, 1],
+      [0, 2]
+    ]
+  },
+
+  // 18
+  {
+    x: 6,
+    y: 4,
+    cells: [
+      [0, 0],
+      [1, 0],
+      [0, 1],
+      [1, 1]
+    ]
+  },
+
+  // 19
+  {
+    x: 12,
+    y: 8,
+    cells: [
+      [0, 0],
+      [1, 0],
+      [0, 1]
+    ]
+  },
+
+  // 20
+  {
+    x: 6,
+    y: 10,
+    cells: [
+      [0, 0],
+      [1, 0],
+      [1, 1]
+    ]
+  },
+
+  // 21
+  {
+    x: 10,
+    y: 10,
+    cells: [
+      [0, 0],
+      [0, 1],
+      [1, 1]
+    ]
+  },
+
+  // 22
+  {
+    x: 14,
+    y: 9,
+    cells: [
+      [0, 0],
+      [1, 0],
+      [1, 1]
+    ]
+  },
+
+  // 23 → 오른쪽 중단 메우기
+  {
+    x: 15,
+    y: 3,
+    cells: [
+      [0, 0],
+      [1, 0],
+      [0, 1]
+    ]
+  },
+
+  // 24 → 오른쪽 하단 메우기
+  {
+    x: 15,
+    y: 0,
+    cells: [
+      [0, 0],
+      [1, 0],
+      [1, 1]
+    ]
+  },
+
+  // 25 → 오른쪽 중앙 빈칸 메우기
+  {
+    x: 14,
+    y: 11,
+    cells: [
+      [0, 0],
+      [1, 0],
+      [0, 1]
+    ]
+  }
+
+  ,
+
+{
+  x: 14,
+  y: 1,
+  cells: [
+    [0, 0],
+    [1, 0],
+    [0, 1]
+  ]
+},
+
+{
+  x: 5,
+  y: 6,
+  cells: [
+    [0, 0],
+    [1, 0],
+    [1, 1]
+  ]
+},
+
+{
+  x: 10,
+  y: 5,
+  cells: [
+    [0, 0],
+    [1, 0],
+    [0, 1],
+    [1, 1]
+  ]
+},
+
+{
+  x: 13,
+  y: 7,
+  cells: [
+    [0, 0],
+    [0, 1],
+    [1, 1]
+  ]
+},
+
+{
+  x: 3,
+  y: 9,
+  cells: [
+    [0, 0],
+    [1, 0],
+    [1, 1]
+  ]
+},
+
+{
+  x: 8,
+  y: 9,
+  cells: [
+    [0, 0],
+    [1, 0],
+    [2, 0],
+    [1, 1]
+  ]
+},
+
+{
+  x: 14,
+  y: 1,
+  cells: [
+    [0, 0],
+    [1, 0],
+    [0, 1]
+  ]
+},
+
+{
+  x: 5,
+  y: 6,
+  cells: [
+    [0, 0],
+    [1, 0],
+    [1, 1]
+  ]
+},
+
+{
+  x: 10,
+  y: 5,
+  cells: [
+    [0, 0],
+    [1, 0],
+    [0, 1],
+    [1, 1]
+  ]
+},
+
+{
+  x: 13,
+  y: 7,
+  cells: [
+    [0, 0],
+    [0, 1],
+    [1, 1]
+  ]
+},
+
+{
+  x: 3,
+  y: 9,
+  cells: [
+    [0, 0],
+    [1, 0],
+    [1, 1]
+  ]
+},
+
+{
+  x: 8,
+  y: 9,
+  cells: [
+    [0, 0],
+    [1, 0],
+    [2, 0],
+    [1, 1]
+  ]
+}
+
+];
+
+
+function getPackingBlockData(
+  blockIndex,
+  count
+) {
+  const block =
+    PACK_BLOCKS[blockIndex];
+
+  if (!block) {
+    return null;
+  }
+
+  const isNewest =
+    blockIndex === count - 1;
+
+  const isRecent =
+    blockIndex >=
+      Math.max(
+        0,
+        count - 3
+      ) &&
+    blockIndex < count - 1;
+
+  const progress =
+    count <= 1
+      ? 1
+      : blockIndex / (count - 1);
+
+  let opacity =
+    0.46 +
+    progress * 0.34;
+
+  if (isRecent) {
+    opacity =
+      Math.min(
+        0.94,
+        opacity + 0.06
+      );
+  }
+
+  if (isNewest) {
+    opacity = 1;
+  }
+
+  return {
+    ...block,
+    opacity,
+    isNewest,
+    isRecent
+  };
+}
+
+
+function createPackingBlock(
+  data
+) {
+  const group =
+    document.createElement("div");
+
+  group.className =
+    "packing-block";
+
+  const rawX =
+    PACK_BASE_X +
+    data.x *
+    (PACK_CELL + PACK_GAP);
+
+  const maxCellX =
+    Math.max(
+      ...data.cells.map(
+        ([cx]) => cx
+      )
+    );
+
+  const blockWidth =
+    maxCellX *
+    (PACK_CELL + PACK_GAP) +
+    PACK_CELL;
+
+  // Packing 전용 오른쪽 범위
+  const PACK_RIGHT_EXCLUSION = 88;
+
+  const packMaxX =
+    PHONE_WIDTH -
+    PACK_RIGHT_EXCLUSION;
+
+  const x =
+    Math.max(
+      PRESSURE_MIN_X,
+      Math.min(
+        rawX,
+        packMaxX -
+        blockWidth
+      )
+    );
+
+  const y =
+    PACK_GROUND_Y -
+    data.y *
+    (PACK_CELL + PACK_GAP);
+
+  group.style.left =
+    `${x}px`;
+
+  group.style.top =
+    `${y}px`;
+
+  group.style.setProperty(
+    "--packing-opacity",
+    data.opacity
+  );
+
+  data.cells.forEach(
+    ([cx, cy]) => {
+      const cell =
+        document.createElement(
+          "div"
+        );
+
+      cell.className =
+        "packing-cell";
+
+      cell.style.left =
+        `${
+          cx *
+          (PACK_CELL + PACK_GAP)
+        }px`;
+
+      cell.style.bottom =
+        `${
+          cy *
+          (PACK_CELL + PACK_GAP)
+        }px`;
+
+      group.appendChild(
+        cell
+      );
+    }
+  );
+
+  pressureLayer.appendChild(
+    group
+  );
+
+  requestAnimationFrame(
+    () => {
+      group.classList.add(
+        "in"
+      );
+    }
+  );
+
+  return group;
+}
+
+function renderTetrisPacking(level) {
+  const minutes =
+    Number(timeSlider.value);
+
+  if (minutes <= 5) {
+    tetrisCells.forEach(
+      block => block.remove()
+    );
+
+    tetrisCells = [];
+
+    return;
+  }
+
+const PACK_BLOCK_INTERVAL = 6;
+
+const count =
+  Math.min(
+    PACK_BLOCKS.length,
+    Math.floor(
+      (minutes - 5) /
+      PACK_BLOCK_INTERVAL
+    ) + 1
+  );
+
+  while (
+    tetrisCells.length >
+    count
+  ) {
+    const block =
+      tetrisCells.pop();
+
+    if (block) {
+      block.remove();
+    }
+  }
+
+  for (
+    let i = 0;
+    i < count;
+    i++
+  ) {
+    const data =
+      getPackingBlockData(
+        i,
+        count
+      );
+
+    if (!data) {
+      continue;
+    }
+
+    if (!tetrisCells[i]) {
+      tetrisCells[i] =
+        createPackingBlock(
+          data
+        );
+    }
+
+    const block =
+      tetrisCells[i];
+
+    block.style.setProperty(
+      "--packing-opacity",
+      data.opacity
+    );
+
+    block.classList.toggle(
+      "birth",
+      data.isNewest
+    );
+
+    block.classList.toggle(
+      "recent",
+      data.isRecent
+    );
+  }
+}
+
+    function renderOrb(level) {
+      const orb = document.createElement("div");
+      orb.className = "orb";
+      orb.style.opacity = 0.2 + level * 0.75;
+      orb.style.transform = `scale(${0.6 + level * 1.05})`;
+      orb.style.boxShadow = `0 0 ${18 + level * 65}px rgba(7,61,255,${0.4 + level * 0.4})`;
+      pressureLayer.appendChild(orb);
+    }
+
+  function growthRandom(index, salt = 0) {
+  const x =
+    Math.sin(
+      index * 91.73 +
+      salt * 47.11 +
+      13.37
+    ) * 43758.5453;
+
+  return x - Math.floor(x);
+}
+
+
+const GROWTH_POSITIONS = Array.from(
+  { length: 9 },
+  (_, i) => {
+
+    const progress =
+      i / 8;
+
+    const start =
+      5 + i * 6;
+
+    const maxSize =
+      44 + i * 9;
+
+    const radius =
+      maxSize / 2;
+
+    // 초반에는 edge 쪽,
+    // 후반에는 점점 중앙 쪽 허용
+    const GROWTH_LEFT_X = 18;
+    const GROWTH_RIGHT_X =
+      PHONE_WIDTH - 52;
+
+    const edgeXLeft =
+      GROWTH_LEFT_X + radius;
+
+    const edgeXRight =
+      GROWTH_RIGHT_X - radius;
+
+    const centerX =
+      (
+        GROWTH_LEFT_X +
+        GROWTH_RIGHT_X
+      ) / 2;
+
+    // 좌 / 우 번갈아 시작
+    const fromLeft =
+      i % 2 === 0;
+
+    const edgeX =
+      fromLeft
+        ? edgeXLeft
+        : edgeXRight;
+
+    // 시간이 갈수록
+    // edge → center
+    const inwardProgress =
+      Math.min(
+        0.82,
+        0.08 +
+        progress * 0.74
+      );
+
+    // 약간의 랜덤 흔들림
+    const jitterX =
+      (
+        growthRandom(i, 2) - 0.5
+      ) * 28;
+
+    const sideBias =
+      fromLeft
+        ? -6
+        : 18;
+
+    const cx =
+      edgeX +
+      (
+        centerX - edgeX
+      ) *
+      inwardProgress +
+      jitterX +
+      sideBias;
+
+    // y는 대각선 흐름이 생기지 않도록
+    // 전체 높이에서 독립적으로 분산
+    const minY =
+      185 + radius;
+
+    const maxY =
+      585 - radius;
+
+    const cy =
+      minY +
+      growthRandom(i, 3) *
+      (
+        maxY - minY
+      );
+
+    return {
+      cx,
+      cy,
+      start,
+      maxSize
+    };
+  }
+);
+
+function getGrowthBlockData(
+  index,
+  minutes
+) {
+  const config =
+    GROWTH_POSITIONS[index];
+
+  if (!config) {
+    return null;
+  }
+
+  if (minutes < config.start) {
+    return null;
+  }
+
+  const duration = 18;
+
+  const localProgress =
+    Math.min(
+      1,
+      (minutes - config.start) /
+      duration
+    );
+
+  // 아주 작게 시작해서
+  // 안정적으로 커짐
+  const scale =
+    0.12 +
+    localProgress * 0.88;
+
+  // 초반에는 흐릿하고
+  // 시간이 지나면서 선명해짐
+  const opacity =
+    0.10 +
+    localProgress * 0.68;
+
+  return {
+    cx: config.cx,
+    cy: config.cy,
+
+    maxSize:
+      config.maxSize,
+
+    scale,
+    opacity,
+
+    isNewest:
+      localProgress < 0.1,
+
+    isRecent:
+      localProgress >= 0.1 &&
+      localProgress < 0.28
+  };
+}
+
+
+
+function renderGrowingBlocks(level) {
+  const minutes =
+    Number(timeSlider.value);
+
+  if (minutes <= 5) {
+    growthBlocks.forEach(
+      block => {
+        if (block) {
+          block.remove();
+        }
+      }
+    );
+
+    growthBlocks = [];
+
+    return;
+  }
+
+  for (
+    let i = 0;
+    i < GROWTH_POSITIONS.length;
+    i++
+  ) {
+    const data =
+      getGrowthBlockData(
+        i,
+        minutes
+      );
+
+    if (!data) {
+      if (growthBlocks[i]) {
+        growthBlocks[i].remove();
+        growthBlocks[i] = null;
+      }
+
+      continue;
+    }
+
+    if (!growthBlocks[i]) {
+      const block =
+        document.createElement(
+          "div"
+        );
+
+      block.className =
+        "growth-block";
+
+      const GROWTH_RIGHT_EXCLUSION = 65;
+
+      const growthMaxX =
+        PHONE_WIDTH -
+        GROWTH_RIGHT_EXCLUSION;
+
+      const radius =
+        data.maxSize / 2;
+
+      const safeCenterX =
+        Math.max(
+          PRESSURE_MIN_X + radius,
+          Math.min(
+            data.cx,
+            growthMaxX - radius
+          )
+        );
+
+      block.style.left =
+        `${safeCenterX}px`;
+
+      block.style.top =
+        `${data.cy}px`;
+
+      block.style.width =
+        `${data.maxSize}px`;
+
+      block.style.height =
+        `${data.maxSize}px`;
+
+      pressureLayer.appendChild(
+        block
+      );
+
+      growthBlocks[i] =
+        block;
+
+      requestAnimationFrame(
+        () => {
+          block.classList.add(
+            "in"
+          );
+        }
+      );
+    }
+
+    const block =
+      growthBlocks[i];
+
+    block.style.setProperty(
+      "--growth-scale",
+      data.scale
+    );
+
+    block.style.setProperty(
+      "--growth-opacity",
+      data.opacity
+    );
+
+    block.classList.toggle(
+      "birth",
+      data.isNewest
+    );
+
+    block.classList.toggle(
+      "recent",
+      data.isRecent
+    );
+  }
+}
+
+const MERGE_CELL_SIZE = 12;
+
+
+// ========================================
+// ZONE A
+// 5분 이후 첫 번째 응집
+// ========================================
+
+const MERGE_ZONE_A = [
+  {
+    startX: 20,
+    startY: 175,
+    endX: 126,
+    endY: 330,
+    start: 5
+  },
+
+  {
+    startX: 365,
+    startY: 215,
+    endX: 140,
+    endY: 330,
+    start: 7
+  },
+
+  {
+    startX: 40,
+    startY: 515,
+    endX: 154,
+    endY: 330,
+    start: 9
+  },
+
+  {
+    startX: 330,
+    startY: 535,
+    endX: 126,
+    endY: 344,
+    start: 11
+  },
+
+  {
+    startX: 90,
+    startY: 285,
+    endX: 140,
+    endY: 344,
+    start: 13
+  },
+
+  {
+    startX: 300,
+    startY: 315,
+    endX: 154,
+    endY: 344,
+    start: 15
+  }
+];
+
+
+// ========================================
+// ZONE B
+// Zone A가 거의 형성될 즈음
+// 다른 위치에서 두 번째 응집 시작
+// ========================================
+
+const MERGE_ZONE_B = [
+  {
+    startX: 365,
+    startY: 160,
+    endX: 245,
+    endY: 470,
+    start: 27
+  },
+
+  {
+    startX: 25,
+    startY: 245,
+    endX: 259,
+    endY: 470,
+    start: 29
+  },
+
+  {
+    startX: 350,
+    startY: 575,
+    endX: 273,
+    endY: 470,
+    start: 31
+  },
+
+  {
+    startX: 45,
+    startY: 560,
+    endX: 245,
+    endY: 484,
+    start: 33
+  },
+
+  {
+    startX: 105,
+    startY: 180,
+    endX: 259,
+    endY: 484,
+    start: 35
+  },
+
+  {
+    startX: 300,
+    startY: 260,
+    endX: 273,
+    endY: 484,
+    start: 37
+  }
+];
+
+
+const MERGE_POINTS = [
+  ...MERGE_ZONE_A,
+  ...MERGE_ZONE_B
+];
+
+
+function getMergeCellData(
+  index,
+  minutes
+) {
+  const config =
+    MERGE_POINTS[index];
+
+  if (!config) {
+    return null;
+  }
+
+  if (minutes < config.start) {
+    return null;
+  }
+
+  const duration = 18;
+
+  const progress =
+    Math.min(
+      1,
+      (minutes - config.start) /
+      duration
+    );
+
+
+  // 부드럽게 출발하고
+  // 마지막에 안정적으로 정착
+  const eased =
+    progress *
+    progress *
+    (3 - 2 * progress);
+
+
+  const rawX =
+    config.startX +
+    (
+      config.endX -
+      config.startX
+    ) *
+    eased;
+
+
+  const y =
+    config.startY +
+    (
+      config.endY -
+      config.startY
+    ) *
+    eased;
+
+
+  // 처음에는 약하게,
+  // 응집될수록 조금 더 선명
+  const opacity =
+    0.18 +
+    progress * 0.62;
+
+
+  // temporal state
+  const isNewest =
+    progress < 0.1;
+
+  const isRecent =
+    progress >= 0.1 &&
+    progress < 0.28;
+
+
+  return {
+    x:
+      clampPressureCenterX(
+        rawX,
+        MERGE_CELL_SIZE / 2
+      ),
+
+    y,
+
+    opacity,
+
+    isNewest,
+    isRecent
+  };
+}
+
+
+function renderMergingMass(level) {
+  const minutes =
+    Number(timeSlider.value);
+
+
+  if (minutes <= 5) {
+    mergeMasses.forEach(
+      cell => {
+        if (cell) {
+          cell.remove();
+        }
+      }
+    );
+
+    mergeMasses = [];
+
+    return;
+  }
+
+
+  for (
+    let i = 0;
+    i < MERGE_POINTS.length;
+    i++
+  ) {
+    const data =
+      getMergeCellData(
+        i,
+        minutes
+      );
+
+
+    if (!data) {
+      if (mergeMasses[i]) {
+        mergeMasses[i].remove();
+        mergeMasses[i] = null;
+      }
+
+      continue;
+    }
+
+
+    if (!mergeMasses[i]) {
+      const cell =
+        document.createElement(
+          "div"
+        );
+
+      cell.className =
+        "merge-cell";
+
+      pressureLayer.appendChild(
+        cell
+      );
+
+      mergeMasses[i] =
+        cell;
+
+      requestAnimationFrame(
+        () => {
+          cell.classList.add(
+            "in"
+          );
+        }
+      );
+    }
+
+
+    const cell =
+      mergeMasses[i];
+
+
+    cell.style.left =
+      `${data.x}px`;
+
+    cell.style.top =
+      `${data.y}px`;
+
+
+    cell.style.setProperty(
+      "--merge-opacity",
+      data.opacity
+    );
+
+
+    cell.classList.toggle(
+      "birth",
+      data.isNewest
+    );
+
+
+    cell.classList.toggle(
+      "recent",
+      data.isRecent
+    );
+  }
+}
+
+const COMPRESSION_ROWS = [
+  150,
+  174,
+  198,
+  222,
+  246,
+  270,
+  294,
+  318,
+  342,
+  366,
+  390,
+  414,
+  438,
+  462,
+  486,
+  510,
+  534,
+  558
+];
+
+
+function getCompressionData(
+  index,
+  side,
+  minutes
+) {
+  const startMinute =
+    5 + index * 2;
+
+  if (minutes < startMinute) {
+    return null;
+  }
+
+  const progress =
+    Math.min(
+      1,
+      (minutes - startMinute) /
+      28
+    );
+
+  const maxInset = 118;
+
+  const inset =
+    18 +
+    progress * maxInset;
+
+  const opacity =
+    0.18 +
+    progress * 0.58;
+
+  return {
+    x:
+      side === "left"
+        ? inset
+        : 393 - inset,
+
+    y:
+      COMPRESSION_ROWS[index],
+
+    opacity,
+
+    isNewest:
+      progress < 0.08
+  };
+}
+
+
+function renderScreenCompression(level) {
+  const minutes =
+    Number(timeSlider.value);
+
+  if (minutes <= 5) {
+    compressionCells.forEach(
+      cell => {
+        if (cell) {
+          cell.remove();
+        }
+      }
+    );
+
+    compressionCells = [];
+
+    return;
+  }
+
+  let cellIndex = 0;
+
+  for (
+    let i = 0;
+    i < COMPRESSION_ROWS.length;
+    i++
+  ) {
+    for (
+      const side of ["left", "right"]
+    ) {
+      const data =
+        getCompressionData(
+          i,
+          side,
+          minutes
+        );
+
+      if (!data) {
+        cellIndex++;
+        continue;
+      }
+
+      if (!compressionCells[cellIndex]) {
+        const cell =
+          document.createElement(
+            "div"
+          );
+
+        cell.className =
+          "compression-cell";
+
+        pressureLayer.appendChild(
+          cell
+        );
+
+        compressionCells[cellIndex] =
+          cell;
+
+        requestAnimationFrame(
+          () => {
+            cell.classList.add(
+              "in"
+            );
+          }
+        );
+      }
+
+      const cell =
+        compressionCells[cellIndex];
+
+      cell.style.left =
+        `${data.x}px`;
+
+      cell.style.top =
+        `${data.y}px`;
+
+      cell.style.setProperty(
+        "--compression-opacity",
+        data.opacity
+      );
+
+      cell.classList.toggle(
+        "birth",
+        data.isNewest
+      );
+
+      cellIndex++;
+    }
+  }
+}
+
+
+    function renderHaze(level) {
+      const haze = document.createElement("div");
+      haze.className = "haze";
+      haze.style.opacity = level * 0.8;
+      haze.style.transform = `translateX(${level * 80}px) scaleX(${0.75 + level * 0.9})`;
+      pressureLayer.appendChild(haze);
+    }
+
+    function renderSurface(level) {
+      const band = document.createElement("div");
+      band.className = "surface-band";
+      band.style.opacity = 0.16 + level * 0.62;
+      band.style.width = `${34 + level * 50}px`;
+      band.style.transform = `translateX(${level * 14 - 17}px) scaleX(${0.55 + level * 0.85})`;
+      pressureLayer.appendChild(band);
+    }
+
+  function render() {
+  const minutes = Number(timeSlider.value);
+  const mode = modeSelect.value;
+
+  let level = getPressureLevel(minutes);
+
+  if (continued && minutes >= 20) {
+    level = 0.35;
+  }
+
+  timeValue.textContent =
+    Math.round(minutes);
+
+  statusText.innerHTML =
+    getStatus(minutes);
+
+  savedToast.classList.remove(
+    "visible"
+  );
+
+  // mode가 바뀔 때만
+  // 전체 pressure layer 초기화
+  if (mode !== lastMode) {
+    clearLayer();
+    lastMode = mode;
+  }
+
+  // accumulation mode별 render
+  if (mode === "edge-grid") {
+    renderEdgeGrid(level);
+
+  } else if (
+    mode === "distributed-grid"
+  ) {
+    renderDistributedGrid(level);
+
+  } else if (
+    mode === "cluster-grid"
+  ) {
+    renderClusterGrid(level);
+
+  } else if (
+    mode === "layered-stack"
+  ) {
+    renderLayeredStack(level);
+
+  } else if (
+  mode === "tetris-packing"
+  ) {
+    renderTetrisPacking(level);
+
+  } else if (
+  mode === "growing-blocks"
+  ) {
+    renderGrowingBlocks(level);
+
+  } else if (
+    mode === "merging-mass"
+  ) {
+    renderMergingMass(level);
+
+  } else if (
+    mode === "screen-compression"
+  ) {
+    renderScreenCompression(level);
+  }
+  
+
+  // check-in
+    if (
+      TEST_PART === 2 &&
+      minutes >= nextCheckMinute &&
+      !continued &&
+      !isPlaying
+    ) {
+    if (checkTitle) {
+      checkTitle.textContent =
+        `지금 ${minutes}분째 시청 중이에요.`;
+    }
+
+    checkCard.classList.add(
+      "visible"
+    );
+
+  } else {
+    checkCard.classList.remove(
+      "visible"
+    );
+  }
+}
+
+function updatePlayButton() {
+  if (!playBtn) return;
+
+  if (isPlaying) {
+    playBtn.textContent = "Pause";
+    playBtn.classList.add("playing");
+  } else {
+    playBtn.textContent = "Play";
+    playBtn.classList.remove("playing");
+  }
+}
+
+function stopAutoPlay() {
+  isPlaying = false;
+
+  if (playTimer) {
+    clearInterval(playTimer);
+    playTimer = null;
+  }
+
+  updatePlayButton();
+}
+
+function startAutoPlay() {
+  stopAutoPlay();
+
+  const current =
+    Number(timeSlider.value);
+
+  // 최대 시간
+  if (current >= MAX_PLAY_MINUTES) {
+    timeSlider.value =
+      MAX_PLAY_MINUTES;
+
+    continued = false;
+
+    render();
+
+    statusText.textContent =
+      "60분: 최대 시뮬레이션 지점에 도달";
+
+    return;
+  }
+
+
+  // ------------------------------------
+  // 이미 check-in 지점에 정확히 도달한 경우
+  // 먼저 card를 보여줌
+  // ------------------------------------
+
+  if (
+    current === nextCheckMinute &&
+    !continued
+  ) {
+    render();
+    return;
+  }
+
+
+  // ------------------------------------
+  // 사용자가 slider를 직접 앞으로 넘긴 경우만
+  // 다음 check point 재계산
+  // ------------------------------------
+
+  while (
+    current > nextCheckMinute &&
+    nextCheckMinute <
+      MAX_PLAY_MINUTES
+  ) {
+    nextCheckMinute +=
+      CHECK_INTERVAL;
+  }
+
+  nextCheckMinute =
+    Math.min(
+      nextCheckMinute,
+      MAX_PLAY_MINUTES
+    );
+
+
+  // ------------------------------------
+  // PLAY
+  // ------------------------------------
+
+  isPlaying = true;
+
+  updatePlayButton();
+
+
+  playTimer =
+    setInterval(() => {
+
+      let next =
+        Number(
+          timeSlider.value
+        ) + PLAY_STEP;
+
+      if (
+        TEST_PART === 1 &&
+        next >= PART1_STOP_MINUTE
+      ) {
+        timeSlider.value = PART1_STOP_MINUTE;
+
+        continued = false;
+
+        stopAutoPlay();
+
+        render();
+
+        return;
+      }
+
+
+      // check-in 도달
+      if (
+        TEST_PART === 2 &&
+        next >= nextCheckMinute
+      ) {
+        next =
+          nextCheckMinute;
+
+        timeSlider.value =
+          next;
+
+        continued = false;
+
+        stopAutoPlay();
+
+        render();
+
+        return;
+      }
+
+
+      timeSlider.value =
+        next;
+
+      continued = false;
+
+      render();
+
+    }, PLAY_SPEED_MS);
+}
+
+function togglePlay() {
+  if (isPlaying) {
+    stopAutoPlay();
+  } else {
+    startAutoPlay();
+  }
+}
+
+function continueFlow() {
+  stopAutoPlay();
+
+  const current = Number(timeSlider.value);
+
+  // 이미 60분이면 더 이상 확장하지 않음
+  if (current >= MAX_PLAY_MINUTES) {
+    continued = false;
+    checkCard.classList.remove("visible");
+    statusText.textContent = "60분: 최대 시뮬레이션 지점에 도달";
+    updatePlayButton();
+    return;
+  }
+
+  // 다음 check point를 10분 뒤로 이동
+  nextCheckMinute = Math.min(
+    nextCheckMinute + CHECK_INTERVAL,
+    MAX_PLAY_MINUTES
+  );
+
+  // card 닫기
+  continued = true;
+  checkCard.classList.remove("visible");
+
+  render();
+
+  statusText.textContent = `Continue: ${nextCheckMinute}분 확인 지점까지 자동 재생`;
+
+  // card가 닫히는 느낌을 잠깐 보여준 뒤 자동재생 시작
+  setTimeout(() => {
+  continued = false;
+  checkCard.classList.remove("visible");
+  startAutoPlay();
+}, 300);
+}
+
+  function wrapFlow() {
+  stopAutoPlay();
+
+  continued = false;
+  checkCard.classList.remove("visible");
+
+  currentClusterZone =
+    CLUSTER_ZONES[
+      Math.floor(Math.random() * CLUSTER_ZONES.length)
+    ];
+
+  clearLayer();
+
+  savedToast.classList.add("visible");
+  statusText.textContent = "Wrap: 현재 흐름이 하나의 Flow로 저장";
+
+  nextCheckMinute = FIRST_CHECK_MINUTE;
+
+  setTimeout(() => savedToast.classList.remove("visible"), 2500);
+
+
+  }
+
+    function resetFlow() {
+      stopAutoPlay();
+
+      timeSlider.value = 0;
+      nextCheckMinute = FIRST_CHECK_MINUTE;
+      continued = false;
+      checkCard.classList.remove("visible");
+
+      currentClusterZone =
+        CLUSTER_ZONES[
+          Math.floor(Math.random() * CLUSTER_ZONES.length)
+        ];
+
+      clearLayer();
+
+      render();
+    }
+
+    timeSlider.addEventListener("input", () => {
+    stopAutoPlay();
+    continued = false;
+    render();
+    });
+
+    modeSelect.addEventListener("change", () => {
+      resetFlow();
+    });
+
+    testPartSelect.addEventListener("change", () => {
+      TEST_PART = Number(testPartSelect.value);
+      resetFlow();
+    });
+
+    colorSelect.addEventListener(
+      "change",
+      () => {
+        updatePressureColor();
+      }
+    );
+
+    playBtn.addEventListener("click", togglePlay);
+
+    updatePressureColor();
+    updatePlayButton();
+
+  </script>
+</body>
+</html>
